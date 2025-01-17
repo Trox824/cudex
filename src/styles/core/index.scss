@@ -23,3 +23,11 @@
 @import "custom/plugins/swiper-slider";
 @import "custom/plugins/choices";
 @import "custom/plugins/datepicker";
+
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+}

@@ -13,10 +13,11 @@ export default function ChapterPages() {
 
   const { pages, isLoading } = useChapterPages(chapterId);
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <DataLoader
         isLoading={isLoading}
         loadingText="Đang tải nội dung chương..."
+        error={null}
       >
         <div className="reading-detail box_doc">
           <LazyImages images={pages} threshold={(height || 1000) * 3} />
@@ -30,7 +31,7 @@ export default function ChapterPages() {
           Chương trước
         </Button>
       </div>
-      <DataLoader isLoading={!chapterId}>
+      <DataLoader isLoading={!chapterId} error={null}>
         {chapterId && <CommentSection type="chapter" typeId={chapterId} />}
       </DataLoader>
     </div>

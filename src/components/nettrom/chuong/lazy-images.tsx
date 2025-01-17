@@ -13,20 +13,22 @@ const Gallery = ({
   scrollPosition: ScrollPosition;
   threshold: number;
 }) => (
-  <div>
+  <div className="flex flex-col items-center">
+    {" "}
+    {/* Centering container */}
     {images.map((image, index) => (
-      <div className="-mx-6 sm:mx-auto" key={image}>
+      <div className="flex w-full justify-center" key={image}>
+        {" "}
+        {/* Centering each image */}
         <MangaImage
           key={image}
-          // Make sure to pass down the scrollPosition,
-          // this will be used by the component to know
-          // whether it must track the scroll position or not
           alt={`Trang ${index}`}
           data-index={index}
           scrollPosition={scrollPosition}
           src={image}
           threshold={threshold}
           index={index}
+          className="custom-manga-image-class"
         />
       </div>
     ))}

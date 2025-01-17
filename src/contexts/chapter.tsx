@@ -48,9 +48,9 @@ export const ChapterContextProvider = ({
   children: React.ReactNode;
 }) => {
   const params = useParams<{ chapterId: string }>();
-  const [chapterId, setChapterId] = useState(params.chapterId);
-
-  const { chapter } = useChapter(chapterId);
+  const [chapterId, setChapterId] = useState(params?.chapterId);
+  const [theme, setTheme] = useState("light");
+  const { chapter } = useChapter(chapterId ?? null);
   const { updateMangas, mangas } = useMangadex();
 
   const { addHistory } = useReadingHistory();
@@ -147,7 +147,7 @@ export const ChapterContextProvider = ({
   return (
     <ChapterContext.Provider
       value={{
-        chapterId,
+        chapterId: chapterId ?? null,
         chapter,
         manga,
         chapters,

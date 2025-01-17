@@ -1,20 +1,25 @@
-import ReactMarkdown from "react-markdown";
 // markdown plugins
-import rehypeRaw from "rehype-raw";
 // import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 
-export default function Markdown({ content }: { content: string }) {
-  return (
-    <ReactMarkdown
-      rehypePlugins={[
-        rehypeRaw,
-        rehypeHighlight,
-        // [remarkGfm, { singleTilde: false }],
-      ]}
-      className="w-full [&_a]:text-web-title [&_a]:hover:text-web-titleLighter [&_pre]:whitespace-pre-wrap [&_pre]:break-words"
-    >
-      {content}
-    </ReactMarkdown>
-  );
+interface MarkdownProps {
+  content: string;
+  onClick?: (event: React.MouseEvent) => void;
 }
+
+const Markdown = ({ content, onClick }: MarkdownProps) => {
+  const processedContent = content.replace(
+    /\[(Xem thêm|Thu gọn)\]/g,
+    '<span class="cursor-pointer text-blue-500 hover:underline" data-action="toggle">[$1]</span>',
+  );
+
+  return (
+    <div
+      onClick={onClick}
+      dangerouslySetInnerHTML={{
+        __html: processedContent,
+      }}
+    />
+  );
+};
+
+export default Markdown;

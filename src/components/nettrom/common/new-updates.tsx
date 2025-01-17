@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 import { useLastUpdates } from "@/hooks/mangadex";
 import { useMangadex } from "@/contexts/mangadex";
-import Loading from "@/components/nettrom/layout/loading";
 import { ExtendChapter } from "@/types/mangadex";
 import { Utils } from "@/utils";
 import { Constants } from "@/constants";
@@ -58,7 +57,48 @@ export default function NewUpdates({
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  if (isLoading) return <Loading title="Đang tải các chương mới" />;
+  if (isLoading) {
+    return (
+      <div className="Module Module-163">
+        <div className="ModuleContent">
+          <div className="items">
+            <div className="relative">
+              <div className="h-8 w-48 animate-pulse rounded bg-gray-700" />
+            </div>
+            <div className="row">
+              {[...Array(10)].map((_, index) => (
+                <div className="item" key={index}>
+                  <figure className="clearfix">
+                    <div className="image">
+                      <div className="h-[223px] w-full animate-pulse rounded bg-gray-700" />
+                      <div className="view clearfix">
+                        <span className="pull-left">
+                          <div className="h-4 w-32 animate-pulse rounded bg-gray-700" />
+                        </span>
+                      </div>
+                    </div>
+                    <figcaption>
+                      <div className="mb-2 h-6 w-full animate-pulse rounded bg-gray-700" />
+                      <ul className="comic-item">
+                        {[...Array(3)].map((_, i) => (
+                          <li
+                            className="mb-1 flex items-center justify-between gap-x-1"
+                            key={i}
+                          >
+                            <div className="h-4 w-full animate-pulse rounded bg-gray-700" />
+                          </li>
+                        ))}
+                      </ul>
+                    </figcaption>
+                  </figure>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (error) return <div>error</div>;
 
   return (

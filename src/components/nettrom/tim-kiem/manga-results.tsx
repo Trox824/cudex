@@ -1,26 +1,27 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Link from "next/link";
-
+import { useEffect, useState } from "react";
 import { useSearchManga } from "@/hooks/mangadex";
 import { useMangadex } from "@/contexts/mangadex";
-import Loading from "@/components/nettrom/layout/loading";
 import { Utils } from "@/utils";
-import { Constants } from "@/constants";
 import Pagination from "../Pagination";
+import MangaResultsSkeleton from "./manga-results-skeleton";
 
 export default function MangaResults() {
   const router = useRouter();
   const params = useSearchParams();
-  const options = Utils.Mangadex.normalizeParams(params);
+  const options = params ? Utils.Mangadex.normalizeParams(params) : {};
   const { mangaList, data, isLoading } = useSearchManga(options);
   const { updateMangaStatistics, mangaStatistics, addMangas } = useMangadex();
-  const offset = params.get("offset") ? parseInt(params.get("offset")!) : 0;
+  const [showFullDescriptions, setShowFullDescriptions] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const offset = params?.get("offset") ? parseInt(params.get("offset")!) : 0;
   const total = data ? data.total : 0;
-  const limit = params.get("limit") ? parseInt(params.get("limit")!) : 24;
+  const limit = params?.get("limit") ? parseInt(params.get("limit")!) : 24;
   const page = Math.floor(offset / limit);
+
   const goToPage = (toPage: number) => {
     options.offset = toPage * limit;
     router.push(Utils.Url.getSearchNetTromUrl(options));
@@ -33,7 +34,7 @@ export default function MangaResults() {
     }
   }, [mangaList, addMangas, updateMangaStatistics]);
 
-  if (isLoading) return <Loading title="Đang tìm truyện..." />;
+  if (isLoading) return <MangaResultsSkeleton />;
 
   return (
     <div
@@ -42,50 +43,44 @@ export default function MangaResults() {
     >
       <div className="ModuleContent">
         <div className="items">
-          <div className="row">
+          <div className="grid grid-cols-2 gap-[20px] lg:grid-cols-4">
             {mangaList.map((manga) => {
-              const mangaTitle = Utils.Mangadex.getMangaTitle(manga);
-              const coverArt = Utils.Mangadex.getCoverArt(manga);
+              const mangaId = manga.id;
+
               return (
-                <div className="item" key={manga.id}>
+                <div className="group" key={mangaId}>
                   <figure className="clearfix">
-                    <div className="image">
-                      <a
-                        title={mangaTitle}
-                        href={Constants.Routes.nettrom.manga(manga.id)}
-                      >
-                        <img
-                          src={coverArt}
-                          className="lazy center"
-                          data-original={coverArt}
-                          alt={mangaTitle}
-                        />
-                      </a>
-                      <div className="view clearfix">
-                        <span className="pull-left">
-                          <i className="fa fa-star"></i>{" "}
-                          {mangaStatistics[manga.id]?.rating.bayesian.toFixed(
-                            2,
-                          ) || "N/A"}{" "}
-                          <i className="fa fa-comment" />{" "}
-                          {mangaStatistics[manga.id]?.comments?.repliesCount ||
-                            "N/A"}{" "}
-                          <i className="fa fa-heart" />{" "}
-                          {mangaStatistics[manga.id]?.follows || "N/A"}
+                    <div className="relative mb-2">
+                      <div className="absolute bottom-0 left-0 z-[2] w-full px-2 py-1.5">
+                        <h3 className="mb-2 line-clamp-2 text-[14px] font-semibold leading-tight text-white transition group-hover:line-clamp-4">
+                          {Utils.Mangadex.getMangaTitle(manga)}
+                        </h3>
+                        <span className="flex items-center justify-between gap-[4px] text-[11px] text-muted-foreground">
+                          <span className="flex items-center gap-[4px]">
+                            <i className="fa fa-star"></i>
+                            {Utils.Number.formatViews(
+                              Math.round(
+                                (mangaStatistics[mangaId]?.rating?.bayesian ||
+                                  0) * 10,
+                              ) / 10,
+                            )}
+                          </span>
+                          <span className="flex items-center gap-[4px]">
+                            <i className="fa fa-comment" />
+                            {Utils.Number.formatViews(
+                              mangaStatistics[mangaId]?.comments
+                                ?.repliesCount || 0,
+                            )}
+                          </span>
+                          <span className="flex items-center gap-[4px]">
+                            <i className="fa fa-heart" />
+                            {Utils.Number.formatViews(
+                              mangaStatistics[mangaId]?.follows || 0,
+                            )}
+                          </span>
                         </span>
                       </div>
                     </div>
-                    <figcaption>
-                      <h3>
-                        <Link
-                          className="jtip"
-                          data-jtip="#truyen-tranh-81754"
-                          href={Constants.Routes.nettrom.manga(manga.id)}
-                        >
-                          {mangaTitle}
-                        </Link>
-                      </h3>
-                    </figcaption>
                   </figure>
                 </div>
               );

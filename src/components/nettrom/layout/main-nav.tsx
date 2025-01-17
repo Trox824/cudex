@@ -102,7 +102,7 @@ export default function MainNav() {
               target="_self"
               href={`${Constants.Routes.nettrom.search}?publicationDemographic=josei&publicationDemographic=shoujo#results`}
             >
-              Con gái
+              Recommender
             </Link>
           </li>
           <li>
@@ -110,7 +110,7 @@ export default function MainNav() {
               target="_self"
               href={`${Constants.Routes.nettrom.search}?publicationDemographic=seinen&publicationDemographic=shounen#results`}
             >
-              Con trai
+              MAL
             </Link>
           </li>
         </ul>

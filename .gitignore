@@ -43,6 +43,9 @@ next-env.d.ts
 !.yarn/sdks
 !.yarn/versions
 
+.package-lock.json
+.yarn.lock
+
 # Serwist
 public/sw*
 public/swe-worker*

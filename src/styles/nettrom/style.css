@@ -9115,3 +9115,52 @@ button.close {
 .scroll-down .scroll-to-fixed-fixed {
   display: none;
 }
+
+.featured-titles-swiper {
+  --swiper-theme-color: #fff;
+  --swiper-pagination-bullet-inactive-color: #fff;
+  --swiper-pagination-bullet-inactive-opacity: 0.5;
+}
+
+.featured-titles-swiper .swiper-pagination-bullet {
+  background: white;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50%;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 20px !important;
+}
+
+.swiper-pagination-bullet {
+  background: white; /* Change the background color to white */
+  opacity: 0.7; /* Optional: make it slightly transparent */
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1; /* Fully opaque for the active bullet */
+}
+
+.tag-state-1 {
+  /* included */
+  @apply h-3 w-3 rounded-full bg-green-500;
+}
+.tag-state-0 {
+  /* none */
+  @apply h-3 w-3 rounded-full border-2 border-gray-400;
+}
+.tag-state--1 {
+  /* excluded */
+  @apply h-3 w-3 rounded-full bg-red-500;
+}
+
+.custom-manga-image-class {
+  max-width: 80%;
+  height: auto; /* or a specific height */
+}

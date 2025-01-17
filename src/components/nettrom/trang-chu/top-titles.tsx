@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { MangadexApi } from "@/api";
 import { useMangadex } from "@/contexts/mangadex";
@@ -19,6 +19,12 @@ import { DataLoader } from "@/components/DataLoader";
 import { Utils } from "@/utils";
 import { Constants } from "@/constants";
 import { twMerge } from "tailwind-merge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/shadcn/hover-card";
+import { Skeleton } from "@/components/shadcn/skeleton";
 
 const loadingText = "Đang tải dữ liệu bảng xếp hạng...";
 
@@ -33,6 +39,8 @@ const MangaTile = (props: {
   const inTop3 = useMemo(() => {
     return props.order < 3;
   }, [props.order]);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   return (
     <li className="relative flex w-full gap-[8px] py-2" key={props.manga.id}>
       <div className="absolute left-4 top-0 flex h-[64px] w-8 items-center justify-center text-right">
@@ -46,33 +54,76 @@ const MangaTile = (props: {
         </span>
       </div>
       <div className="flex grow items-start gap-4 pl-12">
-        <Link
-          className="relative w-[64px] shrink-0 rounded shadow-[-5px_0_20px_rgba(0,0,0,0.5)]"
-          title={props.title}
-          href={Constants.Routes.nettrom.manga(props.manga.id)}
-        >
-          <AspectRatio ratio={1} className="overflow-hidden rounded">
-            <img
-              className="lazy h-full w-full object-cover"
-              src={Utils.Mangadex.getCoverArt(props.manga)}
-              alt={props.title}
-            />
-          </AspectRatio>
-        </Link>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Link
+              className="relative w-[64px] shrink-0 rounded shadow-[-5px_0_20px_rgba(0,0,0,0.5)]"
+              title={props.title}
+              href={Constants.Routes.nettrom.manga(props.manga.id)}
+            >
+              <AspectRatio ratio={1} className="overflow-hidden rounded">
+                <img
+                  className="lazy h-full w-full object-cover"
+                  src={Utils.Mangadex.getCoverArt(props.manga)}
+                  alt={props.title}
+                />
+              </AspectRatio>
+            </Link>
+          </HoverCardTrigger>
+          <HoverCardContent
+            className="w-[500px] rounded-lg border-border bg-background p-6"
+            side="right"
+          >
+            <div className="flex">
+              <div className="w-[200px] flex-none">
+                <img
+                  className="h-[250px] w-full rounded object-cover"
+                  src={Utils.Mangadex.getCoverArt(props.manga)}
+                  alt={props.title}
+                />
+                <div className="mt-2 text-sm text-muted-foreground">
+                  Total: {props.manga.attributes.lastChapter || "??"}
+                </div>
+              </div>
+              <div className="ml-6 max-h-[250px] flex-1 space-y-6 overflow-y-auto">
+                <h3 className="line-clamp-2 text-2xl font-semibold text-foreground">
+                  {props.title}
+                </h3>
+                <p className="text-lg text-muted-foreground">
+                  {Utils.Mangadex.getOriginalMangaTitle(props.manga)}
+                </p>
+                {props.manga.attributes.description?.en && (
+                  <div className="border-b border-muted-foreground pb-2">
+                    <p className="inline text-lg text-foreground">
+                      {showFullDescription
+                        ? props.manga.attributes.description.en
+                        : `${props.manga.attributes.description.en.slice(0, 150)}... `}
+                      <button
+                        className="ml-1 inline-flex text-base text-blue-500 hover:underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowFullDescription(!showFullDescription);
+                        }}
+                      >
+                        {showFullDescription ? "Show Less" : "Show More"}
+                      </button>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+
         <div className="grow">
           <h3>
             <Link
               href={Constants.Routes.nettrom.manga(props.manga.id)}
-              className="line-clamp-2 font-semibold !text-white transition hover:no-underline"
+              className="line-clamp-2 font-semibold transition hover:no-underline"
             >
               {props.title}
             </Link>
           </h3>
-          {/* <p className="chapter top">
-            <span className="text-muted-foreground">
-              {Utils.Mangadex.getOriginalMangaTitle(props.manga)}
-            </span>
-          </p> */}
           {!props.hideCounter && (
             <span className="mt-1 flex shrink-0 items-center gap-2 text-muted-foreground">
               {props.icon}
@@ -82,6 +133,28 @@ const MangaTile = (props: {
         </div>
       </div>
     </li>
+  );
+};
+
+const TopTitlesSkeleton = () => {
+  return (
+    <div className="space-y-4">
+      {Array(7)
+        .fill(0)
+        .map((_, i) => (
+          <div key={i} className="relative flex items-start gap-4 pl-12">
+            <Skeleton className="absolute left-4 top-0 h-16 w-8 bg-muted/5" />
+            <Skeleton className="h-16 w-16 shrink-0 rounded" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-[85%]" />
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4 rounded-full" />
+                <Skeleton className="h-3 w-[20%]" />
+              </div>
+            </div>
+          </div>
+        ))}
+    </div>
   );
 };
 
@@ -168,24 +241,24 @@ export default function TopTitles({ groupId }: { groupId?: string }) {
             </h2>
           </div>
           <Tabs defaultValue="top" className="w-full">
-            <TabsList className="mb-4 grid h-[48px] grid-cols-3 bg-white/10 p-2">
+            <TabsList className="mb-4 grid h-[48px] grid-cols-3 space-x-2 border border-muted-foreground bg-white/10 p-2">
               <TabsTrigger
                 value="top"
-                className="flex h-full items-center gap-3 rounded text-[12px]"
+                className="flex h-full items-center gap-3 rounded text-[12px] hover:bg-gray-300"
               >
                 <FaStar />
                 Top
               </TabsTrigger>
               <TabsTrigger
                 value="favorite"
-                className="flex h-full items-center gap-3 rounded text-[12px]"
+                className="flex h-full items-center gap-3 rounded text-[12px] hover:bg-gray-300"
               >
                 <FaHeart />
                 Yêu thích
               </TabsTrigger>
               <TabsTrigger
                 value="new"
-                className="flex h-full items-center gap-3 rounded text-[12px]"
+                className="flex h-full items-center gap-3 rounded text-[12px] hover:bg-gray-300"
               >
                 <FaClock />
                 Mới
@@ -196,6 +269,7 @@ export default function TopTitles({ groupId }: { groupId?: string }) {
                 isLoading={topMangaListLoading}
                 error={topMangaListError}
                 loadingText={loadingText}
+                skeleton={<TopTitlesSkeleton />}
               >
                 <ul className="flex flex-col gap-4">
                   {topMangaList.map((manga, index) => {
@@ -219,6 +293,7 @@ export default function TopTitles({ groupId }: { groupId?: string }) {
                 isLoading={favoriteMangaListLoading}
                 error={favoriteMangaListError}
                 loadingText={loadingText}
+                skeleton={<TopTitlesSkeleton />}
               >
                 <ul className="flex flex-col gap-4">
                   {favoriteMangaList.map((manga, index) => {
@@ -247,6 +322,7 @@ export default function TopTitles({ groupId }: { groupId?: string }) {
                 isLoading={newMangaListLoading}
                 error={newMangaListError}
                 loadingText={loadingText}
+                skeleton={<TopTitlesSkeleton />}
               >
                 <ul className="flex flex-col gap-4">
                   {newMangaList.map((manga, index) => {

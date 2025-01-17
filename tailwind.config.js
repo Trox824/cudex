@@ -3,7 +3,7 @@ const plugin = require("tailwindcss/plugin");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
-  darkMode: ["selector"],
+  // darkMode: ["selector"],
   important: true,
   theme: {
     screens: {
@@ -27,12 +27,12 @@ module.exports = {
     extend: {
       colors: {
         web: {
-          title: "#ff9601",
+          title: "#1f2937",
           titleLighter: "#ffab34",
           titleDisabled: "#808080",
         },
         dark: "#3c4858",
-        black: "#161c2d",
+        black: "#1f2937",
         "dark-footer": "#192132",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -110,6 +110,19 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      animation: {
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      keyframes: {
+        pulse: {
+          "0%, 100%": {
+            opacity: 1,
+          },
+          "50%": {
+            opacity: 0.5,
+          },
+        },
       },
     },
   },

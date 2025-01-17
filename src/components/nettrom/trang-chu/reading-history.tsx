@@ -10,6 +10,8 @@ import { Constants } from "@/constants";
 
 export default function ReadingHistory() {
   const { history, removeHistory } = useReadingHistory();
+  if (Object.keys(history).length === 0) return null;
+
   return (
     <div>
       <div>

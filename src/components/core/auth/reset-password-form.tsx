@@ -47,7 +47,7 @@ export default function ResetPasswordForm() {
   } = useForm<ISignupForm>({
     resolver: yupResolver(signupSchema),
     defaultValues: {
-      email: searchParams.get("email") || "",
+      email: searchParams?.get("email") || "",
     },
   });
 
@@ -56,7 +56,7 @@ export default function ResetPasswordForm() {
       await resetPassword({
         ...data,
         password_confirmation: data.confirmPassword,
-        token: searchParams.get("token") || "",
+        token: searchParams?.get("token") || "",
       });
     } catch (error) {
       console.error(error);

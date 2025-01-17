@@ -18,26 +18,27 @@ export default function ListChapter({
 }) {
   return (
     <div id="nt_listchapter">
-      <h2 className="mb-4 flex items-center gap-4 text-[20px] font-medium text-web-title">
+      <h2 className="font-base mb-4 flex items-center gap-4 border-b-2 border-[#2980b9] pb-1 text-[20px] text-[#2980b9]">
         <i className="fa fa-list"></i>
         <span>Danh sách chương</span>
       </h2>
       <DataLoader
         isLoading={!props.data}
         loadingText="Đang tải danh sách chương"
+        error={null}
       >
-        <div className="rounded-xl border border-muted-foreground p-4">
-          <div className="heading grid grid-cols-[5fr_4fr_3fr] border-b border-muted-foreground pb-4 text-muted-foreground">
-            <div className="no-wrap">Tên chương</div>
+        <div className="rounded-xl p-4">
+          <div className="heading grid grid-cols-[5fr_4fr_3fr] pb-4 text-muted-foreground">
+            <div className="no-wrap pl-4">Tên chương</div>
             <div className="no-wrap text-center">Cập nhật</div>
-            <div className="no-wrap text-right">Nhóm dịch</div>
+            <div className="no-wrap pr-4 text-right">Nhóm dịch</div>
           </div>
-          <nav>
+          <nav className="rounded-xl border px-4">
             <ul className="flex flex-col gap-2 py-2 text-[12px]">
-              {props.items.map((chapter) => (
+              {props.items.map((chapter, index) => (
                 <li
                   key={chapter.id}
-                  className="grid grid-cols-[5fr_4fr_3fr] gap-2 py-2"
+                  className={`grid grid-cols-[5fr_4fr_3fr] gap-2 py-2 ${index < props.items.length - 1 ? "border-b border-dashed border-gray-400" : ""}`}
                 >
                   <div className="" key={chapter.id}>
                     <Link

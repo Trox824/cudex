@@ -1,54 +1,39 @@
 "use client";
 
-import { AxiosError } from "axios";
-import { Loader2 } from "lucide-react";
-import { useCallback } from "react";
-
-import { MangadexApi } from "@/api";
-
-export const DataLoader = (props: {
+interface DataLoaderProps {
   isLoading: boolean;
-  loadingText?: string;
+  error: any;
   children: React.ReactNode;
-  error?: any;
-}) => {
-  const refresh = useCallback(() => {
-    if (typeof window !== "undefined") window.location.reload();
-  }, []);
+  loadingText?: string;
+  skeleton?: React.ReactNode;
+}
 
-  if (props.isLoading) {
+export function DataLoader({
+  isLoading,
+  error,
+  children,
+  skeleton,
+}: DataLoaderProps) {
+  if (error) {
     return (
-      <div className="flex min-h-[100px] flex-col items-center justify-center gap-2 text-center text-muted-foreground">
-        <Loader2 className="h-[40px] w-[40px] animate-spin" />
-        <span>{props.loadingText || "Đang tải..."}</span>
+      <div className="flex h-[200px] items-center justify-center">
+        <p className="text-destructive">{error.message}</p>
       </div>
     );
   }
 
-  if (props.error) {
-    console.error(props.error);
-    let errorMessage;
-    const error = props.error;
-    if (error instanceof AxiosError) {
-      errorMessage = error.response?.data?.message || error.message;
-    } else if (error instanceof MangadexApi.Utils.MangaDexError) {
-      errorMessage = error.response?.data?.message || error.message;
-    } else errorMessage = "Đã có lỗi xảy ra khi tải dữ liệu này";
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 text-center text-muted-foreground">
-        <span>{errorMessage}</span>
-        <button
-          className="btn btn-danger"
-          onClick={
-            // Attempt to recover by trying to re-render the segment
-            () => refresh()
-          }
-        >
-          Tải lại toàn bộ trang
-        </button>
-      </div>
+      skeleton || (
+        <div className="flex h-[200px] items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
+            <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+          </div>
+        </div>
+      )
     );
   }
 
-  return props.children;
-};
+  return children;
+}

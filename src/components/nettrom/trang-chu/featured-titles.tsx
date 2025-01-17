@@ -10,9 +10,12 @@ import { vi } from "date-fns/locale";
 import { AspectRatio } from "@/components/shadcn/aspect-ratio";
 import { Constants } from "@/constants";
 import { FaClock, FaFire } from "react-icons/fa";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
 import { DataLoader } from "@/components/DataLoader";
 import { Utils } from "@/utils";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Skeleton } from "@/components/shadcn/skeleton";
 
 export default function FeaturedTitles() {
   const { mangaList: featuredTitles, isLoading, error } = useFeaturedTitles();
@@ -22,45 +25,88 @@ export default function FeaturedTitles() {
     if (featuredTitles.length > 0) addMangas(featuredTitles);
   }, [featuredTitles, addMangas]);
 
+  const FeaturedTitlesSkeleton = () => {
+    return (
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {Array(5)
+          .fill(0)
+          .map((_, i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="aspect-[2/3] w-full rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[80%]" />
+                <div className="flex items-center justify-between gap-2">
+                  <Skeleton className="h-3 w-[40%]" />
+                  <Skeleton className="h-3 w-[30%]" />
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="flex items-center gap-4 text-[20px] font-medium text-web-title">
+      <h2 className="font-base flex items-center gap-4 text-[20px] text-[#2980b9]">
         <FaFire />
         Truyện đề cử
       </h2>
-      <div>
-        <DataLoader isLoading={isLoading} error={error}>
+      <div className="relative">
+        <DataLoader
+          isLoading={isLoading}
+          error={error}
+          skeleton={<FeaturedTitlesSkeleton />}
+        >
           <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            autoplay={{ delay: 3000 }}
+            modules={[Navigation, Pagination, Autoplay, A11y]}
+            autoplay={{
+              delay: 10000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            navigation={{
+              nextEl: ".featured-next-btn",
+              prevEl: ".featured-prev-btn",
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+              renderBullet: (index, className) => {
+                return `<span class="${className}"></span>`;
+              },
+              el: null,
+            }}
             breakpoints={{
               360: {
                 slidesPerView: 2,
                 spaceBetween: 10,
               },
               768: {
+                slidesPerView: 3,
+                spaceBetween: 15,
+              },
+              1024: {
                 slidesPerView: 4,
                 spaceBetween: 20,
               },
-              1024: {
+              1280: {
                 slidesPerView: 5,
                 spaceBetween: 20,
               },
             }}
-            spaceBetween={20}
             loop
-            onSlideChange={() => console.log("slide change")}
-            onSwiper={(swiper) => console.log(swiper)}
+            className="featured-titles-swiper"
           >
             {featuredTitles.map((manga) => {
               const title = Utils.Mangadex.getMangaTitle(manga);
               return (
                 <SwiperSlide key={manga.id}>
-                  <div key={manga.id} className={`item bg-black bg-cover`}>
+                  <div key={manga.id} className={`item group bg-cover`}>
                     <Link
                       href={Constants.Routes.nettrom.manga(manga.id)}
                       title={title}
-                      className="transtion group relative block h-full w-full"
+                      className="transtion relative block h-full w-full"
                     >
                       <AspectRatio
                         ratio={Constants.Nettrom.MANGA_COVER_RATIO}
@@ -81,7 +127,7 @@ export default function FeaturedTitles() {
                         </h3>
                         <Link
                           href={Constants.Routes.nettrom.manga(manga.id)}
-                          className="text-web-title transition hover:text-web-titleLighter"
+                          className="text-web-title text-white transition hover:text-web-titleLighter"
                         >
                           {manga.author?.attributes?.name || ""}
                         </Link>
@@ -103,6 +149,45 @@ export default function FeaturedTitles() {
               );
             })}
           </Swiper>
+
+          <button
+            className="featured-prev-btn absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-r-lg bg-black/50 px-4 py-8 text-white transition hover:bg-black/70"
+            aria-label="Previous slide"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-8 w-8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </button>
+          <button
+            className="featured-next-btn absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-l-lg bg-black/50 px-4 py-8 text-white transition hover:bg-black/70"
+            aria-label="Next slide"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-8 w-8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </button>
         </DataLoader>
       </div>
     </div>

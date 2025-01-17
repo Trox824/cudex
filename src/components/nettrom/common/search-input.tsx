@@ -1,6 +1,10 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import {
+  useSearchParams,
+  useRouter,
+  ReadonlyURLSearchParams,
+} from "next/navigation";
 import { useState } from "react";
 
 import { Utils } from "@/utils";
@@ -14,7 +18,7 @@ import { Constants } from "@/constants";
 export default function SearchInput() {
   const params = useSearchParams();
   const router = useRouter();
-  const [title, setTitle] = useState(params.get("title") || "");
+  const [title, setTitle] = useState(params?.get("title") || "");
   const deboucedTitle = useDebounce(title, 500);
   const { mangaList, isLoading, error } = useSearchManga(
     {
@@ -30,7 +34,9 @@ export default function SearchInput() {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    const options = Utils.Mangadex.normalizeParams(params);
+    const options = Utils.Mangadex.normalizeParams(
+      params ?? (new URLSearchParams() as ReadonlyURLSearchParams),
+    );
     options.title = title;
     router.push(Utils.Url.getSearchNetTromUrl(options));
   };
@@ -66,7 +72,13 @@ export default function SearchInput() {
             return (
               <li>
                 <Link href={Constants.Routes.nettrom.manga(manga.id)}>
-                  <img className="lazy image-thumb" src={cover} alt={title} />
+                  <img
+                    className="lazy image-thumb"
+                    src={cover}
+                    alt={title}
+                    width={100}
+                    height={100}
+                  />
                   <h3>{title}</h3>
                   <h4>
                     <i>{altTitles.join(",")}</i>

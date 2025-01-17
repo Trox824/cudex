@@ -35,7 +35,7 @@ export default function LoginForm() {
   const { login } = useAuth({
     middleware: "guest",
     redirectIfAuthenticated:
-      searchParams.get("redirectUrl") || Constants.Routes.nettrom.index,
+      searchParams?.get("redirectUrl") || Constants.Routes.nettrom.index,
   });
 
   const {

@@ -1,0 +1,61 @@
+import { MangaTile } from "@/components/nettrom/MangaTile";
+
+export default function NewUpdates({
+  title,
+  groupId,
+}: {
+  title?: string;
+  groupId?: string;
+}) {
+  // ...existing hooks and logic...
+
+  return (
+    <div className="Module Module-163" id="new-updates">
+      <div className="ModuleContent">
+        <div className="items">
+          <div className="relative">
+            <h1 className="my-0 mb-5 flex items-center gap-3 text-[20px] text-[#2980b9]">
+              <FaClock />
+              <span>{title ?? "Truyện mới cập nhật"}</span>
+            </h1>
+            {/* ...existing commented code... */}
+          </div>
+          <DataLoader 
+            isLoading={isLoading} 
+            error={error}
+            skeleton={<NewUpdatesSkeleton />}
+          >
+            <div className={`grid grid-cols-2 gap-[20px] lg:grid-cols-4`}>
+              {Object.entries(updates).map(([mangaId, chapterList]) => {
+                const coverArt = Utils.Mangadex.getCoverArt(mangas[mangaId]);
+                const mangaTitle = Utils.Mangadex.getMangaTitle(
+                  mangas[mangaId],
+                );
+                const readedChapters = history[mangaId];
+                return (
+                  <MangaTile
+                    id={mangaId}
+                    key={mangaId}
+                    thumbnail={coverArt}
+                    title={mangaTitle}
+                    chapters={chapterList}
+                    readedChapters={readedChapters}
+                  />
+                );
+              })}
+            </div>
+          </DataLoader>
+        </div>
+        <Pagination
+          onPageChange={(event) => {
+            router.push(`${pathname}?page=${event.selected}#new-updates`);
+          }}
+          pageCount={totalPage}
+          forcePage={page}
+          marginPagesDisplayed={1}
+          pageRangeDisplayed={2}
+        />
+      </div>
+    </div>
+  );
+} 

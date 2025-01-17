@@ -6,10 +6,10 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import Iconify from "@/components/iconify";
 import { useAuth } from "@/hooks/useAuth";
-
 import MainNav from "./main-nav";
 import { Constants } from "@/constants";
 import SearchInput from "../common/search-input";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -44,37 +44,31 @@ export default function Header() {
             <div className="navbar-form navbar-left hidden-xs search-box comicsearchbox">
               <SearchInput />
             </div>
-            <i className="fa fa-lightbulb-o toggle-dark"></i>
-            <Link
-              href={Constants.Routes.nettrom.search}
-              type="button"
-              className="search-button-icon visible-xs"
-              aria-label="Search"
-            >
-              <i className="fa fa-search"></i>
-            </Link>
-            <div className="toggle-dark">
-              <a
-                title="MangaDex"
-                className="text-white"
-                href="https://mangadex.org/"
-                target="_blank"
+            <div className="navbar-toggle block md:hidden">
+              <button
+                type="button"
+                aria-label="Menu"
+                className="p-2"
+                onClick={() => setOpenMenu((prev) => !prev)}
               >
-                <Iconify icon="fa6-solid:cat" />
-              </a>
+                {openMenu ? (
+                  <i className="fa fa-times"></i>
+                ) : (
+                  <i className="fa fa-bars"></i>
+                )}
+              </button>
             </div>
-            <button
-              type="button"
-              className="navbar-toggle block md:hidden"
-              aria-label="Menu"
-              onClick={() => setOpenMenu((prev) => !prev)}
-            >
-              {openMenu ? (
-                <i className="fa fa-times"></i>
-              ) : (
-                <i className="fa fa-bars"></i>
-              )}
-            </button>
+            <div className="flex h-full items-center justify-center gap-2">
+              <ThemeToggle className="mt-5" />
+              <Link
+                href={Constants.Routes.nettrom.search}
+                type="button"
+                className="search-button-icon visible-xs p-2"
+                aria-label="Search"
+              >
+                <i className="fa fa-search"></i>
+              </Link>
+            </div>
           </div>
           <AuthDropdown desktop />
         </div>
